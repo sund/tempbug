@@ -54,7 +54,7 @@ server.log("t0_therm "+ t0_therm);
   //agent.send("Batt", imp.Batt());
   agent.send("Batt", calcBatt[0]);
   
-  imp.onidle(function() { server.sleepfor(900); });   // 15 minutes
+  imp.onidle(function() { server.sleepfor(300); });   // 15 minutes
   
 }
 
