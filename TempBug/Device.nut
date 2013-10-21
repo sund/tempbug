@@ -21,25 +21,31 @@ function getTemp() {
       imp.sleep(0.01);
       val += hardware.pin9.read();
   }
-  val = val/10;
-
-  // scale the ADC reading to a voltage by dividing by the full-scale value and multiplying by the supply voltage
-  local v_therm = calcBatt[0] * val / 65535.0;
-  // calculate the resistance of the thermistor at the current temperature
-  local r_therm = 10000.0 / ( (calcBatt[0] / v_therm) - 1);
-  local ln_therm = math.log(10000.0 / r_therm);
-  
-  local t_therm = (t0_therm * b_therm) / (b_therm - t0_therm * ln_therm) - 273.15;
-  
-  ///
   // turn the thermistor network back off
   hardware.pin8.write(1);
   local toff = hardware.micros();
   server.log(format("Thermistor Network on for %d us", (toff-ton)));
   
+  val = val/10;
+
+
+server.log("b_therm "+ b_therm);
+server.log("t0_therm "+ t0_therm);
+  // scale the ADC reading to a voltage by dividing by the full-scale value and multiplying by the supply voltage
+  local v_therm = calcBatt[0] * val / 65535.0;
+  server.log("v_therm "+ v_therm);
+  // calculate the resistance of the thermistor at the current temperature
+  local r_therm = 10000.0 / ( calcBatt[0] / v_therm ) - 1;
+  server.log("r_therm "+ r_therm);
+  local ln_therm = math.log(10000.0 / r_therm);
+  server.log("ln_therm "+ ln_therm);
+  
+  local t_therm = (t0_therm * b_therm) / (b_therm - (t0_therm * ln_therm)) - 273.15;
+  server.log("t_therm "+ t_therm);
+  ///
   
   // convert to fahrenheit for the less-scientific among us
-  local f = (t_therm) * 9.0 / 5.0 + 32.0;
+  local f = (t_therm) * (9.0 / 5.0) + 32.0;
   // format into a string for the string output port
   local f_str = format("%.01f",f)
   server.log("Current temp is "+f_str+" F");
