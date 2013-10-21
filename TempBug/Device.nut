@@ -15,12 +15,16 @@ function getTemp() {
   // turn on the thermistor network
   hardware.pin8.write(0);
 
+thermPin <- hardware.pin9;
+
+
   // gather several ADC readings and average them (just takes out some noise)
   local val = 0;
   for (local i = 0; i < 10; i++) {
       imp.sleep(0.01);
-      val += hardware.pin9.read();
+      val += thermPin.read();
   }
+  
   // turn the thermistor network back off
   hardware.pin8.write(1);
   local toff = hardware.micros();
