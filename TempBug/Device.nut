@@ -31,6 +31,7 @@ function getTemp() {
 
 server.log("b_therm "+ b_therm);
 server.log("t0_therm "+ t0_therm);
+server.log("val "+ val);
   // scale the ADC reading to a voltage by dividing by the full-scale value and multiplying by the supply voltage
   local v_therm = calcBatt[0] * val / 65535.0;
   server.log("v_therm "+ v_therm);
@@ -54,7 +55,7 @@ server.log("t0_therm "+ t0_therm);
   //agent.send("Batt", imp.Batt());
   agent.send("Batt", calcBatt[0]);
   
-  imp.onidle(function() { server.sleepfor(300); });   // 15 minutes
+  imp.onidle(function() { server.sleepfor(300); });   // 5 minutes
   
 }
 
