@@ -1,5 +1,5 @@
 // TempBug Example Device Code
- 
+
 /* GLOBALS and CONSTANTS -----------------------------------------------------*/
 
 // all calculations are done in Kelvin
@@ -7,9 +7,25 @@
 // check your datasheet
 const b_therm = 3988;
 const t0_therm = 298.15;
-const WAKEINTERVAL_MIN = 15; // interval between wake-and-reads in minutes
+const WAKEINTERVAL_MIN = 2; // interval between wake-and-reads in minutes
 
 /* CLASS AND GLOBAL FUNCTION DEFINITIONS -------------------------------------*/
+/* report firmware version*/
+
+function start_version()
+{
+    server.log("Device started");
+    if ("getsoftwareversion" in imp)
+    {
+        server.log("Device firmware version: " + imp.getsoftwareversion());
+    }
+    else
+    {
+        server.log("Sorry - my firmware doesn't include imp.getsoftwareversion() yet.");
+    }
+}
+
+start_version();
 
 /*
  * simple NTC thermistor
@@ -49,7 +65,7 @@ class thermistor {
         }
         local v_rat = vrat_raw / (points_per_read * 65535.0);
 
-        local ln_therm = 0;	
+        local ln_therm = 0;
         if (high_side_therm) {
             ln_therm = math.log(v_rat / (1.0 - v_rat));
         } else {
@@ -78,7 +94,7 @@ class thermistor {
 // pin 8 is driven high to turn off temp monitor (saves power) or low to read
 therm_en_l <- hardware.pin8;
 therm_en_l.configure(DIGITAL_OUT);
-therm_en_l.write(1); 
+therm_en_l.write(1);
 // pin 9 is the middle of the voltage divider formed by the NTC - read the analog voltage to determine temperature
 temp_sns <- hardware.pin9;
 
@@ -97,9 +113,9 @@ therm_en_l.write(1);
 
 //Sleep for 15 minutes and 1 second, minus the time past the 0:15
 //so we wake up near each 15 minute mark (prevents drifting on slow DHCP)
-imp.onidle( function() { 
+imp.onidle( function() {
     //server.sleepfor(1 + 15 - (time() % (WAKEINTERVAL_MIN*15)));
-    server.sleepfor(1 + WAKEINTERVAL_MIN*60 - (time() % (WAKEINTERVAL_MIN*60))); 
+    server.sleepfor(1 + WAKEINTERVAL_MIN*60 - (time() % (WAKEINTERVAL_MIN*60)));
 });
 
 // full firmware is reloaded and run from the top on each wake cycle, so no need to construct a loop

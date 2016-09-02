@@ -10,46 +10,46 @@ const SPARKFUN_PRIVATE_KEY = "YOUR PRIVATE KEY HERE";
 
 class SparkFunStream {
     _baseUrl = null;
-    
+
     _publicKey = null;
     _privateKey = null;
-   
+
     constructor(baseUrl, publicKey, privateKey) {
         _baseUrl = baseUrl;
         _privateKey = privateKey;
         _publicKey = publicKey;
     }
-    
+
     function push(data, cb = null) {
         assert(typeof(data == "table"));
-        
+
         // add private key to table
         data["private_key"] <- _privateKey;
         local url = format("https://%s/input/%s?%s", _baseUrl, _publicKey, http.urlencode(data));
-        
+
         // make the request
         local request = http.get(url);
         if (cb == null) {
             return request.sendsync();
         }
-        
+
         request.sendasync(cb);
     }
-    
+
     function get(cb = null) {
         local url = format("https://%s/output/%s.json", _baseUrl, _publicKey);
-        
+
         local request = http.get(url);
         if(cb == null) {
             return request.sendsync();
         }
         return request.sendasync(cb);
     }
-    
+
     function clear(cb = null) {
         local url = format("https://%s/input/%s/clear", _baseUrl, _publicKey);
         local headers = { "phant-private-key": _privateKey };
-        
+
         local request = http.httpdelete(url, headers);
         if (cb == null) {
             return request.sendsync();
@@ -71,6 +71,7 @@ device.on("data", function(datapoint) {
 /* RUNTIME BEGINS HERE -------------------------------------------------------*/
 
 server.log("TempBug Agent Running");
+server.log("Agent started (version: " + imp.getsoftwareversion() + ")");
 
 // instantiate our SparkFun client
 stream <- SparkFunStream(SPARKFUN_BASE, SPARKFUN_PUBLIC_KEY, SPARKFUN_PRIVATE_KEY);
